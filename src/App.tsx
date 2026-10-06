@@ -8,8 +8,10 @@ import { EscrowPaymentModal } from './components/EscrowPaymentModal';
 import { ContractModal } from './components/ContractModal';
 import { MoveInChecklistModal } from './components/MoveInChecklistModal';
 import { MyTransactionsModal } from './components/MyTransactionsModal';
+import { GoogleAuthModal } from './components/GoogleAuthModal';
 import { INITIAL_PROPERTIES } from './data/mockProperties';
 import { CondoUnit, BookingState, ListingType } from './types/property';
+import { GoogleUserData } from './utils/jwt';
 import { ShieldCheck, Lock, CheckCircle2, Sparkles, Building, FileCheck } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -19,6 +21,9 @@ export const App: React.FC = () => {
   const [selectedStation, setSelectedStation] = useState('');
   const [selectedBedrooms, setSelectedBedrooms] = useState('');
   const [onlyVerified, setOnlyVerified] = useState(false);
+
+  // Google User Auth State
+  const [googleUser, setGoogleUser] = useState<GoogleUserData | null>(null);
 
   // Active Modals & Flow States
   const [selectedProperty, setSelectedProperty] = useState<CondoUnit | null>(null);
@@ -31,6 +36,7 @@ export const App: React.FC = () => {
   const [showContractModal, setShowContractModal] = useState(false);
   const [showMoveInModal, setShowMoveInModal] = useState(false);
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
+  const [showGoogleAuthModal, setShowGoogleAuthModal] = useState(false);
 
   // Success Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -95,7 +101,7 @@ export const App: React.FC = () => {
     const newBooking: BookingState = {
       unitId: bookingProperty.id,
       expiresAt: Date.now() + 3600 * 1000,
-      tenantName: bookingData.tenantName,
+      tenantName: googleUser?.name || bookingData.tenantName,
       tenantPhone: bookingData.tenantPhone,
       status: 'PENDING_PAYMENT',
       depositAmount: bookingProperty.depositAmount,
@@ -165,6 +171,8 @@ export const App: React.FC = () => {
         setActiveTab={setActiveTab}
         myBookingCount={activeBooking ? 1 : 0}
         onOpenMyBookings={() => setShowTransactionsModal(true)}
+        googleUser={googleUser}
+        onOpenAuth={() => setShowGoogleAuthModal(true)}
       />
 
       {/* Hero Section */}
@@ -322,6 +330,20 @@ export const App: React.FC = () => {
         onContinuePayment={() => setShowPaymentModal(true)}
         onContinueContract={() => setShowContractModal(true)}
         onContinueMoveIn={() => setShowMoveInModal(true)}
+      />
+
+      <GoogleAuthModal
+        isOpen={showGoogleAuthModal}
+        onClose={() => setShowGoogleAuthModal(false)}
+        user={googleUser}
+        onLoginSuccess={(userData) => {
+          setGoogleUser(userData);
+          triggerToast(`ยินดีต้อนรับ ${userData.name}! เข้าสู่ระบบด้วย Google เรียบร้อยแล้ว`);
+        }}
+        onLogout={() => {
+          setGoogleUser(null);
+          triggerToast('ออกจากระบบเรียบร้อยแล้ว');
+        }}
       />
     </div>
   );

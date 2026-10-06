@@ -1,11 +1,14 @@
 import React from 'react';
-import { Building2, ShieldCheck, UserCheck, Bell, Sparkles } from 'lucide-react';
+import { Building2, ShieldCheck, Bell, Sparkles, LogIn } from 'lucide-react';
+import { GoogleUserData } from '../utils/jwt';
 
 interface NavbarProps {
   activeTab: 'RENT' | 'SALE';
   setActiveTab: (tab: 'RENT' | 'SALE') => void;
   myBookingCount: number;
   onOpenMyBookings: () => void;
+  googleUser: GoogleUserData | null;
+  onOpenAuth: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -13,6 +16,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab,
   myBookingCount,
   onOpenMyBookings,
+  googleUser,
+  onOpenAuth,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
@@ -60,7 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
-          {/* Right Action: Badges & My Transactions */}
+          {/* Right Action: Badges & My Transactions & Google Login */}
           <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200/60 font-medium">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
@@ -81,10 +86,32 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-              <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold text-xs border border-slate-300">
-                <UserCheck className="w-4 h-4 text-sky-700" />
-              </div>
+            {/* Google Profile or Login Button */}
+            <div className="flex items-center pl-2 border-l border-slate-200">
+              {googleUser ? (
+                <button
+                  onClick={onOpenAuth}
+                  className="flex items-center gap-2 p-1 pr-3 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 transition"
+                  title="ดูโปรไฟล์และจัดการบัญชี"
+                >
+                  <img
+                    src={googleUser.picture}
+                    alt={googleUser.name}
+                    className="w-7 h-7 rounded-full object-cover border border-white"
+                  />
+                  <span className="text-xs font-semibold text-slate-800 max-w-[100px] truncate hidden sm:inline">
+                    {googleUser.name.split(' ')[0]}
+                  </span>
+                </button>
+              ) : (
+                <button
+                  onClick={onOpenAuth}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>เข้าสู่ระบบ Google</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
