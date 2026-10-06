@@ -10,6 +10,7 @@ import { MoveInChecklistModal } from './components/MoveInChecklistModal';
 import { MyTransactionsModal } from './components/MyTransactionsModal';
 import { GoogleAuthModal } from './components/GoogleAuthModal';
 import { AdminDashboard } from './components/AdminDashboard';
+import { AIChatbot } from './components/AIChatbot';
 import { INITIAL_PROPERTIES } from './data/mockProperties';
 import { CondoUnit, BookingState, ListingType, ADMIN_EMAILS } from './types/property';
 import { GoogleUserData } from './utils/jwt';
@@ -381,6 +382,13 @@ export const App: React.FC = () => {
           triggerToast={triggerToast}
         />
       )}
+
+      {/* Floating AI Assistant Chatbot */}
+      <AIChatbot
+        properties={properties}
+        onSelectProperty={handleOpenDetail}
+        onBookProperty={handleStartBooking}
+      />
     </div>
   );
 };
