@@ -69,21 +69,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
-          {/* Right Action: Admin Access, Badges & My Transactions & Google Login */}
+          {/* Right Action: Admin Access (ONLY FOR AUTHORIZED ADMINS), Badges & My Transactions & Google Login */}
           <div className="flex items-center gap-2.5">
-            {/* Admin Dashboard Entry Button */}
-            <button
-              onClick={onOpenAdmin}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition shadow-sm ${
-                isAdmin
-                  ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-amber-400 border border-slate-700 hover:border-amber-400/50'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
-              }`}
-              title="ระบบหลังบ้านสำหรับผู้ดูแลระบบ"
-            >
-              <LayoutDashboard className="w-4 h-4 text-amber-400" />
-              <span>{isAdmin ? 'ระบบหลังบ้าน (Admin Panel)' : 'เข้าหลังบ้าน (Admin)'}</span>
-            </button>
+            {/* STRICT RBAC: Render Admin Dashboard Entry Button ONLY when user is an authorized Admin */}
+            {isAdmin && (
+              <button
+                onClick={onOpenAdmin}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold bg-gradient-to-r from-slate-900 to-slate-800 text-amber-400 border border-slate-700 hover:border-amber-400/50 transition shadow-sm animate-pulse"
+                title="ระบบหลังบ้านสำหรับผู้ดูแลระบบ (Super Admin Only)"
+              >
+                <LayoutDashboard className="w-4 h-4 text-amber-400" />
+                <span>ระบบหลังบ้าน (Admin Panel)</span>
+              </button>
+            )}
 
             <button
               onClick={onOpenMyBookings}
@@ -115,6 +113,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className="text-xs font-semibold text-slate-800 max-w-[100px] truncate hidden sm:inline">
                     {googleUser.name.split(' ')[0]}
                   </span>
+                  {isAdmin && (
+                    <span className="text-[9px] font-extrabold bg-rose-600 text-white px-1.5 py-0.2 rounded-full uppercase">
+                      Admin
+                    </span>
+                  )}
                 </button>
               ) : (
                 <button

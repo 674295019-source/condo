@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CondoUnit, BookingState, DisputeTicket, AdminUser } from '../types/property';
+import { CondoUnit, BookingState, DisputeTicket, AdminUser, ADMIN_EMAILS } from '../types/property';
 import {
   LayoutDashboard,
   Building,
@@ -92,9 +92,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   currentAdminEmail,
   triggerToast,
 }) => {
+  const isAuthorized = ADMIN_EMAILS.includes(currentAdminEmail.toLowerCase());
+
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'PROPERTIES' | 'ESCROW' | 'CONTRACTS' | 'DISPUTES' | 'USERS'>('OVERVIEW');
   const [disputes, setDisputes] = useState<DisputeTicket[]>(INITIAL_DISPUTES);
   const [users, setUsers] = useState<AdminUser[]>(INITIAL_USERS);
+
+  // If unauthorized, render 403 Access Denied Guard Screen
+  if (!isAuthorized) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl max-w-md w-full p-8 text-center shadow-2xl border border-slate-200">
+          <div className="w-16 h-16 rounded-3xl bg-rose-100 flex items-center justify-center text-rose-600 mx-auto mb-4 border border-rose-200">
+            <ShieldAlert className="w-8 h-8" />
+          </div>
+          <h3 className="text-xl font-extrabold text-slate-900 mb-1">HTTP 403 Forbidden</h3>
+          <p className="text-xs text-rose-600 font-bold mb-3">เข้าถึงระบบถูกปฏิเสธ (Unauthorized Access)</p>
+          <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+            คุณไม่ได้รับสิทธิ์เข้าถึงระบบหลังบ้านของ CondoSmart เนื่องจากอีเมลของคุณ (<span className="font-mono text-slate-800 font-bold">{currentAdminEmail || 'ยังไม่ได้เข้าสู่ระบบ'}</span>) ไม่อยู่ในรายชื่อ Super Admin ที่ได้รับอนุญาต
+          </p>
+          <button
+            onClick={onClose}
+            className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition"
+          >
+            ย้อนกลับสู่หน้าหลัก
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // New Property Form State
   const [showAddPropertyModal, setShowAddPropertyModal] = useState(false);

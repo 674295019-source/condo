@@ -163,6 +163,15 @@ export const App: React.FC = () => {
     triggerToast(`ตรวจรับห้องสำเร็จ! โอนเงินให้ ${bookingProperty.owner.name} เรียบร้อยแล้ว`);
   };
 
+  const handleOpenAdmin = () => {
+    if (isAdmin) {
+      setShowAdminDashboard(true);
+    } else {
+      triggerToast('คุณไม่มีสิทธิ์เข้าถึงระบบหลังบ้าน (Super Admin Only) กรุณาล็อกอินด้วยอีเมลแอดมิน');
+      setShowGoogleAuthModal(true);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Toast Notification */}
@@ -182,7 +191,7 @@ export const App: React.FC = () => {
         googleUser={googleUser}
         onOpenAuth={() => setShowGoogleAuthModal(true)}
         isAdmin={isAdmin}
-        onOpenAdmin={() => setShowAdminDashboard(true)}
+        onOpenAdmin={handleOpenAdmin}
       />
 
       {/* Hero Section */}
@@ -357,6 +366,7 @@ export const App: React.FC = () => {
         }}
         onLogout={() => {
           setGoogleUser(null);
+          setShowAdminDashboard(false);
           triggerToast('ออกจากระบบเรียบร้อยแล้ว');
         }}
       />
@@ -367,7 +377,7 @@ export const App: React.FC = () => {
           setProperties={setProperties}
           activeBooking={activeBooking}
           onClose={() => setShowAdminDashboard(false)}
-          currentAdminEmail={googleUser?.email || '674295019@parichat.skru.ac.th'}
+          currentAdminEmail={googleUser?.email || ''}
           triggerToast={triggerToast}
         />
       )}
