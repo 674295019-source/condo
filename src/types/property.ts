@@ -1,5 +1,6 @@
 export type ListingType = 'RENT' | 'SALE';
 export type UnitStatus = 'AVAILABLE' | 'HOLDING' | 'RESERVED' | 'OCCUPIED';
+export type UserRole = 'ADMIN' | 'OWNER' | 'TENANT';
 
 export interface CondoUnit {
   id: string;
@@ -50,3 +51,27 @@ export interface MoveInItem {
   photoCount: number;
   notes?: string;
 }
+
+export interface DisputeTicket {
+  id: string;
+  bookingId: string;
+  unitTitle: string;
+  complainantName: string;
+  reason: string;
+  status: 'OPEN' | 'RESOLVED_REFUND' | 'RESOLVED_PAYOUT';
+  createdAt: string;
+}
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  verifiedKYC: boolean;
+  registeredDate: string;
+}
+
+export const ADMIN_EMAILS = [
+  '674295019@parichat.skru.ac.th',
+  'seree999@gmail.com'
+];

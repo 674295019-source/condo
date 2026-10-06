@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, ShieldCheck, Bell, Sparkles, LogIn } from 'lucide-react';
+import { Building2, ShieldCheck, Bell, Sparkles, LogIn, LayoutDashboard } from 'lucide-react';
 import { GoogleUserData } from '../utils/jwt';
 
 interface NavbarProps {
@@ -9,6 +9,8 @@ interface NavbarProps {
   onOpenMyBookings: () => void;
   googleUser: GoogleUserData | null;
   onOpenAuth: () => void;
+  isAdmin: boolean;
+  onOpenAdmin: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,6 +20,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenMyBookings,
   googleUser,
   onOpenAuth,
+  isAdmin,
+  onOpenAdmin,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
@@ -65,20 +69,29 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
-          {/* Right Action: Badges & My Transactions & Google Login */}
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200/60 font-medium">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Escrow Protected</span>
-            </div>
+          {/* Right Action: Admin Access, Badges & My Transactions & Google Login */}
+          <div className="flex items-center gap-2.5">
+            {/* Admin Dashboard Entry Button */}
+            <button
+              onClick={onOpenAdmin}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition shadow-sm ${
+                isAdmin
+                  ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-amber-400 border border-slate-700 hover:border-amber-400/50'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
+              }`}
+              title="ระบบหลังบ้านสำหรับผู้ดูแลระบบ"
+            >
+              <LayoutDashboard className="w-4 h-4 text-amber-400" />
+              <span>{isAdmin ? 'ระบบหลังบ้าน (Admin Panel)' : 'เข้าหลังบ้าน (Admin)'}</span>
+            </button>
 
             <button
               onClick={onOpenMyBookings}
-              className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 border border-slate-200 transition"
+              className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 border border-slate-200 transition hidden lg:flex"
               title="รายการธุรกรรมและสัญญาของฉัน"
             >
               <Bell className="w-4 h-4 text-slate-600" />
-              <span className="hidden sm:inline">ธุรกรรมของฉัน</span>
+              <span>ธุรกรรมของฉัน</span>
               {myBookingCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-sky-600 text-white text-[11px] font-bold rounded-full flex items-center justify-center animate-pulse">
                   {myBookingCount}

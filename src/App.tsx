@@ -9,8 +9,9 @@ import { ContractModal } from './components/ContractModal';
 import { MoveInChecklistModal } from './components/MoveInChecklistModal';
 import { MyTransactionsModal } from './components/MyTransactionsModal';
 import { GoogleAuthModal } from './components/GoogleAuthModal';
+import { AdminDashboard } from './components/AdminDashboard';
 import { INITIAL_PROPERTIES } from './data/mockProperties';
-import { CondoUnit, BookingState, ListingType } from './types/property';
+import { CondoUnit, BookingState, ListingType, ADMIN_EMAILS } from './types/property';
 import { GoogleUserData } from './utils/jwt';
 import { ShieldCheck, Lock, CheckCircle2, Sparkles, Building, FileCheck } from 'lucide-react';
 
@@ -25,6 +26,12 @@ export const App: React.FC = () => {
   // Google User Auth State
   const [googleUser, setGoogleUser] = useState<GoogleUserData | null>(null);
 
+  // Is current logged in user an admin?
+  const isAdmin = useMemo(() => {
+    if (!googleUser) return false;
+    return ADMIN_EMAILS.includes(googleUser.email.toLowerCase());
+  }, [googleUser]);
+
   // Active Modals & Flow States
   const [selectedProperty, setSelectedProperty] = useState<CondoUnit | null>(null);
   const [bookingProperty, setBookingProperty] = useState<CondoUnit | null>(null);
@@ -37,6 +44,7 @@ export const App: React.FC = () => {
   const [showMoveInModal, setShowMoveInModal] = useState(false);
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
   const [showGoogleAuthModal, setShowGoogleAuthModal] = useState(false);
+  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
   // Success Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -173,6 +181,8 @@ export const App: React.FC = () => {
         onOpenMyBookings={() => setShowTransactionsModal(true)}
         googleUser={googleUser}
         onOpenAuth={() => setShowGoogleAuthModal(true)}
+        isAdmin={isAdmin}
+        onOpenAdmin={() => setShowAdminDashboard(true)}
       />
 
       {/* Hero Section */}
@@ -338,13 +348,29 @@ export const App: React.FC = () => {
         user={googleUser}
         onLoginSuccess={(userData) => {
           setGoogleUser(userData);
-          triggerToast(`ยินดีต้อนรับ ${userData.name}! เข้าสู่ระบบด้วย Google เรียบร้อยแล้ว`);
+          const isUserAdmin = ADMIN_EMAILS.includes(userData.email.toLowerCase());
+          if (isUserAdmin) {
+            triggerToast(`ยินดีต้อนรับ Super Admin ${userData.name}! สิทธิ์เข้าถึงระบบหลังบ้านเปิดใช้งานแล้ว`);
+          } else {
+            triggerToast(`ยินดีต้อนรับ ${userData.name}! เข้าสู่ระบบด้วย Google เรียบร้อยแล้ว`);
+          }
         }}
         onLogout={() => {
           setGoogleUser(null);
           triggerToast('ออกจากระบบเรียบร้อยแล้ว');
         }}
       />
+
+      {showAdminDashboard && (
+        <AdminDashboard
+          properties={properties}
+          setProperties={setProperties}
+          activeBooking={activeBooking}
+          onClose={() => setShowAdminDashboard(false)}
+          currentAdminEmail={googleUser?.email || '674295019@parichat.skru.ac.th'}
+          triggerToast={triggerToast}
+        />
+      )}
     </div>
   );
 };
