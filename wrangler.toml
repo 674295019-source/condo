@@ -5,3 +5,8 @@ pages_build_output_dir = "dist"
 [vars]
 ENVIRONMENT = "production"
 APP_NAME = "CondoSmart Platform"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "condo-db"
+database_id = "46d50d75-79dd-4d73-9427-adb0e97e7609"
